@@ -4,20 +4,6 @@ const {
   formatComments,
 } = require("../db/seeds/utils");
 
-const request = require("supertest");
-const app = require("../app");
-const db = require("../db/connection");
-const seed = require("../db/seeds/seed");
-const data = require("../db/data/test-data");
-
-beforeEach(() => {
-  return seed(data);
-});
-
-afterAll(() => {
-  if (db.end) return db.end();
-});
-
 describe("convertTimestampToDate", () => {
   test("returns a new object", () => {
     const timestamp = 1557572706232;
@@ -114,16 +100,5 @@ describe("formatComments", () => {
     const comments = [{ created_at: timestamp }];
     const formattedComments = formatComments(comments, {});
     expect(formattedComments[0].created_at).toEqual(new Date(timestamp));
-  });
-});
-
-describe.only("GET test example", () => {
-  it("should return status: 200 - message object", () => {
-    return request(app)
-      .get("/api/")
-      .expect(200)
-      .then(response => {
-        expect(response.body).toEqual({ msg: "this is a message" });
-      });
   });
 });

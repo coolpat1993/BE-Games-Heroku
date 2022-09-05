@@ -1,11 +1,12 @@
-const { selectTreasures, insertTreasures } = require("../models/models.js");
+const { selectCategories } = require("../models/models.js");
 
 exports.testExample = (request, response) => {
   response.status(200).send({ msg: "this is a message" });
 };
 
-exports.postTreasures = (request, response, next) => {
-  insertTreasures(request.body).then(newTreasure => {
-    response.status(201).send({ newTreasure });
+exports.viewCategories = (req, res) => {
+  selectCategories().then(catas => {
+    res.status(200).send({ categories: catas });
+    console.log(catas);
   });
 };

@@ -7,6 +7,5 @@ exports.testExample = (request, response) => {
 exports.viewCategories = (req, res) => {
   selectCategories().then(catas => {
     res.status(200).send({ categories: catas });
-    console.log(catas);
   });
 };

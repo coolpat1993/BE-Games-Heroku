@@ -30,3 +30,14 @@ exports.selectUsers = () => {
     return result.rows;
   });
 };
+
+exports.updateReview = (review_id, updates) => {
+  return db
+    .query(
+      "UPDATE reviews SET votes = votes + $1 WHERE review_id = $2 RETURNING *;",
+      [updates, review_id]
+    )
+    .then(response => {
+      return response.rows[0];
+    });
+};

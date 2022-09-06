@@ -2,6 +2,7 @@ const {
   selectCategories,
   selectReviews,
   selectUsers,
+  updateReview,
 } = require("../models/models.js");
 
 exports.testExample = (request, response) => {
@@ -26,7 +27,20 @@ exports.viewReviews = (req, res, next) => {
 };
 
 exports.viewUsers = (req, res) => {
-  selectUsers().then(user => {
-    res.status(200).send({ users: user });
+  selectUsers()
+    .then(user => {
+      res.status(200).send({ users: user });
+    })
+    .catch(err => {
+      next(err);
+    });
+};
+
+exports.patchReview = (req, res) => {
+  const { review_id } = req.params;
+  const updates = req.body.inc_votes;
+  updateReview(review_id, updates).then(review => {
+    console.log(review);
+    res.status(201).send({ review });
   });
 };

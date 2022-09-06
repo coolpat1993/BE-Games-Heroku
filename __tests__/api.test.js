@@ -44,7 +44,7 @@ describe("GET api/categories", () => {
   });
 });
 
-describe("2. GET /api/reviews/:review_id", () => {
+describe.only("2. GET /api/reviews/:review_id", () => {
   test("status:200, responds with a single matching review", () => {
     const review_id = 2;
     return request(app)
@@ -62,6 +62,18 @@ describe("2. GET /api/reviews/:review_id", () => {
           owner: "philippaclaire9",
           designer: "Leslie Scott",
           created_at: "2021-01-18T10:01:41.251Z",
+        });
+      });
+  });
+  test("should return 200: not found when input is not a number", () => {
+    const review_id = "string";
+    return request(app)
+      .get(`/api/reviews/${review_id}`)
+      .expect(400)
+      .then(response => {
+        expect(response.body).toEqual({
+          status: 400,
+          msg: "invalid review ID",
         });
       });
   });

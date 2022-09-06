@@ -10,9 +10,13 @@ exports.viewCategories = (req, res) => {
   });
 };
 
-exports.viewReviews = (req, res) => {
+exports.viewReviews = (req, res, next) => {
   const { review_id } = req.params;
-  selectReviews(review_id).then(review_by_id => {
-    res.status(200).send({ review: review_by_id });
-  });
+  selectReviews(review_id)
+    .then(review_by_id => {
+      res.status(200).send({ review: review_by_id });
+    })
+    .catch(err => {
+      next(err);
+    });
 };

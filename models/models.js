@@ -25,8 +25,8 @@ exports.selectReviews = review_id => {
             });
         } else {
           return Promise.reject({
-            status: 200,
-            msg: "This review does not yet exist",
+            status: 404,
+            msg: "This review was not found",
           });
         }
       });

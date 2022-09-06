@@ -77,15 +77,15 @@ describe("2. GET /api/reviews/:review_id", () => {
         });
       });
   });
-  test("should return 200: this review does not yet exist when passed with a number larger than the array length", () => {
+  test("should return 404: this review does not yet exist when passed with a number larger than the array length", () => {
     const review_id = 9999;
     return request(app)
       .get(`/api/reviews/${review_id}`)
-      .expect(200)
+      .expect(404)
       .then(response => {
         expect(response.body).toEqual({
-          status: 200,
-          msg: "This review does not yet exist",
+          status: 404,
+          msg: "This review was not found",
         });
       });
   });

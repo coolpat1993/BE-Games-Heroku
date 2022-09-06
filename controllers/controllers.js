@@ -1,4 +1,8 @@
-const { selectCategories, selectReviews } = require("../models/models.js");
+const {
+  selectCategories,
+  selectReviews,
+  selectUsers,
+} = require("../models/models.js");
 
 exports.testExample = (request, response) => {
   response.status(200).send({ msg: "this is a message" });
@@ -19,4 +23,10 @@ exports.viewReviews = (req, res, next) => {
     .catch(err => {
       next(err);
     });
+};
+
+exports.viewUsers = (req, res) => {
+  selectUsers().then(user => {
+    res.status(200).send({ users: user });
+  });
 };

@@ -90,3 +90,25 @@ describe("2. GET /api/reviews/:review_id", () => {
       });
   });
 });
+
+describe("GET api/users", () => {
+  it("should return status: 200, and an array of catagory objects containing the correct keys", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then(response => {
+        const users = response.body.users;
+        expect(users).toBeInstanceOf(Array);
+        expect(users).toHaveLength(4);
+        users.forEach(category => {
+          expect(category).toEqual(
+            expect.objectContaining({
+              username: expect.any(String),
+              name: expect.any(String),
+              avatar_url: expect.any(String),
+            })
+          );
+        });
+      });
+  });
+});

@@ -90,3 +90,48 @@ describe("2. GET /api/reviews/:review_id", () => {
       });
   });
 });
+
+describe("GET api/users", () => {
+  it("should return status: 200, and an array of catagory objects containing the correct keys", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then(response => {
+        const users = response.body.users;
+        expect(users).toHaveLength(4);
+        users.forEach(category => {
+          expect(category).toEqual(
+            expect.objectContaining({
+              username: expect.any(String),
+              name: expect.any(String),
+              avatar_url: expect.any(String),
+            })
+          );
+        });
+      });
+  });
+});
+
+describe.only("5. PATCH /api/reviews/:review_id", () => {
+  it("status:201, responds with the updated review with new votes", () => {
+    const updatedVote = { inc_votes: 68983 };
+    return request(app)
+      .patch("/api/reviews/3")
+      .send(updatedVote)
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.review).toEqual({
+          review_id: 3,
+          title: "Ultimate Werewolf",
+          review_body: "We couldn't find the werewolf!",
+          review_img_url:
+            "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+          votes: 68988,
+          category: "social deduction",
+          owner: "bainesface",
+          designer: "Akihisa Okui",
+          created_at: "2021-01-18T10:01:41.251Z",
+        });
+      });
+  });
+});

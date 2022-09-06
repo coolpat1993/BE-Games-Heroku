@@ -44,7 +44,7 @@ describe("GET api/categories", () => {
   });
 });
 
-describe.only("2. GET /api/reviews/:review_id", () => {
+describe("2. GET /api/reviews/:review_id", () => {
   test("status:200, responds with a single matching review", () => {
     const review_id = 2;
     return request(app)
@@ -65,7 +65,7 @@ describe.only("2. GET /api/reviews/:review_id", () => {
         });
       });
   });
-  test("should return 200: not found when input is not a number", () => {
+  test("should return 400: not found when input is not a number", () => {
     const review_id = "string";
     return request(app)
       .get(`/api/reviews/${review_id}`)
@@ -74,6 +74,18 @@ describe.only("2. GET /api/reviews/:review_id", () => {
         expect(response.body).toEqual({
           status: 400,
           msg: "invalid review ID",
+        });
+      });
+  });
+  test("should return 200: this review does not yet exist when passed with a number larger than the array length", () => {
+    const review_id = 9999;
+    return request(app)
+      .get(`/api/reviews/${review_id}`)
+      .expect(200)
+      .then(response => {
+        expect(response.body).toEqual({
+          status: 200,
+          msg: "This review does not yet exist",
         });
       });
   });

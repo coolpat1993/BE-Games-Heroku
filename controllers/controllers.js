@@ -26,7 +26,7 @@ exports.viewReviews = (req, res, next) => {
     });
 };
 
-exports.viewUsers = (req, res) => {
+exports.viewUsers = (req, res, next) => {
   selectUsers()
     .then(user => {
       res.status(200).send({ users: user });
@@ -36,11 +36,14 @@ exports.viewUsers = (req, res) => {
     });
 };
 
-exports.patchReview = (req, res) => {
+exports.patchReview = (req, res, next) => {
   const { review_id } = req.params;
   const updates = req.body.inc_votes;
-  updateReview(review_id, updates).then(review => {
-    console.log(review);
-    res.status(201).send({ review });
-  });
+  updateReview(review_id, updates)
+    .then(review => {
+      res.status(201).send({ review });
+    })
+    .catch(err => {
+      next(err);
+    });
 };

@@ -112,9 +112,9 @@ describe("GET api/users", () => {
   });
 });
 
-describe.only("5. PATCH /api/reviews/:review_id", () => {
+describe("5. PATCH /api/reviews/:review_id", () => {
   it("status:201, responds with the updated review with new votes", () => {
-    const updatedVote = { inc_votes: 68983 };
+    const updatedVote = { inc_votes: 12 };
     return request(app)
       .patch("/api/reviews/3")
       .send(updatedVote)
@@ -126,11 +126,24 @@ describe.only("5. PATCH /api/reviews/:review_id", () => {
           review_body: "We couldn't find the werewolf!",
           review_img_url:
             "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
-          votes: 68988,
+          votes: 17,
           category: "social deduction",
           owner: "bainesface",
           designer: "Akihisa Okui",
           created_at: "2021-01-18T10:01:41.251Z",
+        });
+      });
+  });
+  it("status:201, responds with the updated review with new votes", () => {
+    const updatedVote = { inc_votes: "sdf" };
+    return request(app)
+      .patch("/api/reviews/3")
+      .send(updatedVote)
+      .expect(400)
+      .then(response => {
+        expect(response.body).toEqual({
+          status: 400,
+          msg: "invalid vote data",
         });
       });
   });

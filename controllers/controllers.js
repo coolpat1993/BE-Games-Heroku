@@ -3,6 +3,7 @@ const {
   selectReviews,
   selectUsers,
   updateReview,
+  selectAllReviews,
 } = require("../models/models.js");
 
 exports.testExample = (request, response) => {
@@ -42,6 +43,16 @@ exports.patchReview = (req, res, next) => {
   updateReview(review_id, updates)
     .then(review => {
       res.status(201).send({ review });
+    })
+    .catch(err => {
+      next(err);
+    });
+};
+
+exports.getAllReviews = (req, res, next) => {
+  selectAllReviews()
+    .then(reviews => {
+      res.status(200).send({ review: reviews });
     })
     .catch(err => {
       next(err);

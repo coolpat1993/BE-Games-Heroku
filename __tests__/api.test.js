@@ -3,6 +3,7 @@ const app = require("../app");
 const db = require("../db/connection");
 const seed = require("../db/seeds/seed");
 const data = require("../db/data/test-data");
+const { string } = require("pg-format");
 
 beforeEach(() => {
   return seed(data);
@@ -44,7 +45,7 @@ describe("GET api/categories", () => {
   });
 });
 
-describe.only("2. GET /api/reviews/:review_id", () => {
+describe("2. GET /api/reviews/:review_id", () => {
   test("status:200, responds with a single matching review", () => {
     const review_id = 2;
     return request(app)
@@ -145,6 +146,38 @@ describe("5. PATCH /api/reviews/:review_id", () => {
         expect(response.body).toEqual({
           status: 400,
           msg: "invalid vote data",
+        });
+      });
+  });
+});
+
+describe("2. GET /api/reviews", () => {
+  test("status:200, responds with every review in DESC order", () => {
+    return request(app)
+      .get(`/api/reviews`)
+      .expect(200)
+      .then(({ body }) => {
+        let review = body.review;
+        expect(review.length).toEqual(13);
+        console.log(review);
+        expect(review).toBeSortedBy("created_at", {
+          descending: true,
+        });
+        review.forEach(review => {
+          expect(review).toEqual(
+            expect.objectContaining({
+              review_id: expect.any(Number),
+              title: expect.any(String),
+              category: expect.any(String),
+              designer: expect.any(String),
+              owner: expect.any(String),
+              review_body: expect.any(String),
+              review_img_url: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              comment_count: expect.any(String),
+            })
+          );
         });
       });
   });

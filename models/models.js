@@ -17,7 +17,6 @@ exports.selectReviews = review_id => {
       )
       .then(result => {
         if (result.rows.length >= 1) {
-          console.log(result.rows);
           return result.rows[0];
         } else {
           return Promise.reject({
@@ -44,4 +43,28 @@ exports.updateReview = (review_id, updates) => {
     .then(response => {
       return response.rows[0];
     });
+};
+
+exports.selectAllReviews = (sort_by = "created_at", order_by = "DESC") => {
+  const validSortColumns = ["created_at", "review_id", "title"];
+  const validOrder = ["ASC", "DESC"];
+
+  let queryStr = `SELECT reviews.*, COUNT(comments.review_id) AS comment_count FROM reviews LEFT JOIN comments ON reviews.review_id=comments.review_id GROUP BY reviews.review_id`;
+
+  if (!validSortColumns.includes(sort_by) || !validOrder.includes(order_by)) {
+    return Promise.reject({ status: 400, msg: "bad request" });
+  }
+
+  queryStr += ` ORDER BY ${sort_by} ${order_by};`;
+
+  return db.query(queryStr).then(result => {
+    if (result.rows.length >= 1) {
+      return result.rows;
+    } else {
+      return Promise.reject({
+        status: 404,
+        msg: "This review was not found",
+      });
+    }
+  });
 };

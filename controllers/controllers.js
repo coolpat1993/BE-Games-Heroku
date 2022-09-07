@@ -50,7 +50,11 @@ exports.patchReview = (req, res, next) => {
 };
 
 exports.getAllReviews = (req, res, next) => {
-  selectAllReviews()
+  const sort_by = req.query.sort_by;
+  const order_by = req.query.order;
+  const category = req.query.category;
+
+  selectAllReviews(category, sort_by, order_by)
     .then(reviews => {
       res.status(200).send({ review: reviews });
     })

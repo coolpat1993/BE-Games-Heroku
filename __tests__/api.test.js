@@ -159,7 +159,6 @@ describe("2. GET /api/reviews", () => {
       .then(({ body }) => {
         let review = body.review;
         expect(review.length).toEqual(13);
-        console.log(review);
         expect(review).toBeSortedBy("created_at", {
           descending: true,
         });
@@ -178,6 +177,40 @@ describe("2. GET /api/reviews", () => {
               comment_count: expect.any(String),
             })
           );
+        });
+      });
+  });
+});
+
+describe("GET api/treasures where filter matches query", () => {
+  it("should return the caregory that matches the input", () => {
+    return request(app)
+      .get("/api/reviews?category=dexterity")
+      .expect(200)
+      .then(response => {
+        expect(response.body.review[0].category).toBe("dexterity");
+      });
+  });
+  it("should return an array of treasures only containg matched query value", () => {
+    return request(app)
+      .get("/api/reviews?category=social deduction")
+      .expect(200)
+      .then(response => {
+        const output = response.body.review;
+        const filteredOutput = output.filter(
+          review => review.category === "social deduction"
+        );
+        expect(output).toEqual(filteredOutput);
+      });
+  });
+  it("should return 404: not found when input contains colour that is not a property value", () => {
+    return request(app)
+      .get("/api/reviews?category=somethingElse")
+      .expect(404)
+      .then(response => {
+        expect(response.body).toEqual({
+          status: 404,
+          msg: "There were no reviews with those parameters",
         });
       });
   });

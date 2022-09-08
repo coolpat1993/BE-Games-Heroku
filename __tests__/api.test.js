@@ -18,7 +18,6 @@ reviewObject = {
   category: expect.any(String),
   designer: expect.any(String),
   owner: expect.any(String),
-  review_body: expect.any(String),
   review_img_url: expect.any(String),
   created_at: expect.any(String),
   votes: expect.any(Number),
@@ -57,7 +56,7 @@ describe("GET api/categories", () => {
   });
 });
 
-describe("2. GET /api/reviews/:review_id", () => {
+describe("GET /api/reviews/:review_id", () => {
   test("status:200, responds with a single matching review", () => {
     const review_id = 2;
     return request(app)
@@ -67,7 +66,6 @@ describe("2. GET /api/reviews/:review_id", () => {
         expect(body.review).toEqual({
           review_id: review_id,
           title: "Jenga",
-          review_body: "Fiddly fun for all the family",
           review_img_url:
             "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
           votes: 5,
@@ -126,7 +124,7 @@ describe("GET api/users", () => {
   });
 });
 
-describe("5. PATCH /api/reviews/:review_id", () => {
+describe("PATCH /api/reviews/:review_id", () => {
   it("status:201, responds with the updated review with new votes", () => {
     const updatedVote = { inc_votes: 12 };
     return request(app)
@@ -189,17 +187,31 @@ it("status:400, Bad request when review data unavaliable <", () => {
     });
 });
 
-describe("2. GET /api/reviews", () => {
+describe("GET /api/reviews", () => {
   test("status:200, responds with every review in DESC order", () => {
     return request(app)
       .get(`/api/reviews`)
       .expect(200)
       .then(({ body }) => {
-        expect(body.length).toEqual(13);
-        expect(body).toBeSortedBy("created_at", {
+        expect(body.reviews.length).toEqual(13);
+        expect(body.reviews).toBeSortedBy("created_at", {
           descending: true,
         });
-        body.forEach(body => {
+        body.reviews.forEach(body => {
+          expect(body).toEqual(expect.objectContaining(reviewObject));
+        });
+      });
+  });
+  test("status:200, responds with every review sorted by review_id in ASC order", () => {
+    return request(app)
+      .get(`/api/reviews?sort_by=review_id&order=ASC`)
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.reviews.length).toEqual(13);
+        expect(body.reviews).toBeSortedBy("review_id", {
+          descending: false,
+        });
+        body.reviews.forEach(body => {
           expect(body).toEqual(expect.objectContaining(reviewObject));
         });
       });
@@ -207,51 +219,26 @@ describe("2. GET /api/reviews", () => {
 });
 
 describe("GET api/reviews where filter matches query", () => {
-  it("should return the caregory that matches the input", () => {
-    return request(app)
-      .get("/api/reviews?category=dexterity")
-      .expect(200)
-      .then(({ body }) => {
-        expect(body[0].category).toBe("dexterity");
-      });
-  });
   it("should return an array of objects only containg matched query value", () => {
     return request(app)
-      .get("/api/reviews?category=social deduction")
+      .get("/api/reviews?category=social+deduction")
       .expect(200)
       .then(({ body }) => {
-        const output = body;
+        const output = body.reviews;
         const filteredOutput = output.filter(
           review => review.category === "social deduction"
         );
         expect(output).toEqual(filteredOutput);
       });
   });
-  it("should return 404: not found when input contains category items that is not a property value", () => {
+  it("should return 200: not found when input contains category items that is not a property value", () => {
     return request(app)
       .get("/api/reviews?category=somethingElse")
-      .expect(404)
+      .expect(200)
       .then(response => {
         expect(response.body).toEqual({
-          status: 404,
+          status: 200,
           msg: "There were no reviews with those parameters",
-        });
-      });
-  });
-});
-
-describe("2. GET /api/reviews", () => {
-  test("status:200, responds with every review sorted by review_id in ASC order", () => {
-    return request(app)
-      .get(`/api/reviews?sort_by=review_id&order=ASC`)
-      .expect(200)
-      .then(({ body }) => {
-        expect(body.length).toEqual(13);
-        expect(body).toBeSortedBy("review_id", {
-          descending: false,
-        });
-        body.forEach(body => {
-          expect(body).toEqual(expect.objectContaining(reviewObject));
         });
       });
   });

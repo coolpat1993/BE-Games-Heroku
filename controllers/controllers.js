@@ -56,7 +56,7 @@ exports.getAllReviews = (req, res, next) => {
 
   selectAllReviews(category, sort_by, order_by)
     .then(reviews => {
-      res.status(200).send(reviews);
+      res.status(200).send({ reviews });
     })
     .catch(err => {
       next(err);

@@ -12,6 +12,19 @@ afterAll(() => {
   if (db.end) return db.end();
 });
 
+reviewObject = {
+  review_id: expect.any(Number),
+  title: expect.any(String),
+  category: expect.any(String),
+  designer: expect.any(String),
+  owner: expect.any(String),
+  review_body: expect.any(String),
+  review_img_url: expect.any(String),
+  created_at: expect.any(String),
+  votes: expect.any(Number),
+  comment_count: expect.any(String),
+};
+
 describe("GET test example", () => {
   it("should return status: 200 - message object", () => {
     return request(app)
@@ -135,7 +148,7 @@ describe("5. PATCH /api/reviews/:review_id", () => {
         });
       });
   });
-  it("status:201, responds with the updated review with new votes", () => {
+  it("status:400, responds with an error when incorrect data type us used", () => {
     const updatedVote = { inc_votes: "sdf" };
     return request(app)
       .patch("/api/reviews/3")
@@ -144,10 +157,36 @@ describe("5. PATCH /api/reviews/:review_id", () => {
       .then(response => {
         expect(response.body).toEqual({
           status: 400,
-          msg: "invalid vote data",
+          msg: "SQL ERROR invalid user data input",
         });
       });
   });
+});
+it("status:400, responds with an error when incorrect data format is used", () => {
+  const updatedVote = { votes: 5 };
+  return request(app)
+    .patch("/api/reviews/3")
+    .send(updatedVote)
+    .expect(400)
+    .then(response => {
+      expect(response.body).toEqual({
+        status: 400,
+        msg: "invalid vote data format, use '{inc_votes: Num}'",
+      });
+    });
+});
+it("status:400, Bad request when review data unavaliable <", () => {
+  const updatedVote = { inc_votes: 5 };
+  return request(app)
+    .patch("/api/reviews/3000")
+    .send(updatedVote)
+    .expect(400)
+    .then(response => {
+      expect(response.body).toEqual({
+        status: 400,
+        msg: "This data is unreachable at this time",
+      });
+    });
 });
 
 describe("2. GET /api/reviews", () => {
@@ -156,53 +195,39 @@ describe("2. GET /api/reviews", () => {
       .get(`/api/reviews`)
       .expect(200)
       .then(({ body }) => {
-        let review = body.review;
-        expect(review.length).toEqual(13);
-        expect(review).toBeSortedBy("created_at", {
+        expect(body.length).toEqual(13);
+        expect(body).toBeSortedBy("created_at", {
           descending: true,
         });
-        review.forEach(review => {
-          expect(review).toEqual(
-            expect.objectContaining({
-              review_id: expect.any(Number),
-              title: expect.any(String),
-              category: expect.any(String),
-              designer: expect.any(String),
-              owner: expect.any(String),
-              review_body: expect.any(String),
-              review_img_url: expect.any(String),
-              created_at: expect.any(String),
-              votes: expect.any(Number),
-              comment_count: expect.any(String),
-            })
-          );
+        body.forEach(body => {
+          expect(body).toEqual(expect.objectContaining(reviewObject));
         });
       });
   });
 });
 
-describe("GET api/treasures where filter matches query", () => {
+describe("GET api/reviews where filter matches query", () => {
   it("should return the caregory that matches the input", () => {
     return request(app)
       .get("/api/reviews?category=dexterity")
       .expect(200)
-      .then(response => {
-        expect(response.body.review[0].category).toBe("dexterity");
+      .then(({ body }) => {
+        expect(body[0].category).toBe("dexterity");
       });
   });
-  it("should return an array of treasures only containg matched query value", () => {
+  it("should return an array of objects only containg matched query value", () => {
     return request(app)
       .get("/api/reviews?category=social deduction")
       .expect(200)
-      .then(response => {
-        const output = response.body.review;
+      .then(({ body }) => {
+        const output = body;
         const filteredOutput = output.filter(
           review => review.category === "social deduction"
         );
         expect(output).toEqual(filteredOutput);
       });
   });
-  it("should return 404: not found when input contains colour that is not a property value", () => {
+  it("should return 404: not found when input contains category items that is not a property value", () => {
     return request(app)
       .get("/api/reviews?category=somethingElse")
       .expect(404)
@@ -210,6 +235,23 @@ describe("GET api/treasures where filter matches query", () => {
         expect(response.body).toEqual({
           status: 404,
           msg: "There were no reviews with those parameters",
+        });
+      });
+  });
+});
+
+describe("2. GET /api/reviews", () => {
+  test("status:200, responds with every review sorted by review_id in ASC order", () => {
+    return request(app)
+      .get(`/api/reviews?sort_by=review_id&order=ASC`)
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.length).toEqual(13);
+        expect(body).toBeSortedBy("review_id", {
+          descending: false,
+        });
+        body.forEach(body => {
+          expect(body).toEqual(expect.objectContaining(reviewObject));
         });
       });
   });

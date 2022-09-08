@@ -40,8 +40,15 @@ exports.updateReview = (review_id, updates) => {
       "UPDATE reviews SET votes = votes + $1 WHERE review_id = $2 RETURNING *;",
       [updates, review_id]
     )
-    .then(response => {
-      return response.rows[0];
+    .then(result => {
+      if (result.rows.length >= 1) {
+        return result.rows[0];
+      } else {
+        return Promise.reject({
+          status: 400,
+          msg: "This data is unreachable at this time",
+        });
+      }
     });
 };
 

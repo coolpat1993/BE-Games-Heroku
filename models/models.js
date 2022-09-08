@@ -6,13 +6,15 @@ exports.selectCategories = () => {
   });
 };
 
+const reviewSansReviewBody = `reviews.review_id, reviews.title, reviews.category, reviews.designer, reviews.owner, reviews.review_img_url, reviews.created_at, reviews.votes,`;
+
 exports.selectReviews = review_id => {
   if (isNaN(review_id) === true) {
     return Promise.reject({ status: 400, msg: "invalid review ID" });
   } else {
     return db
       .query(
-        `SELECT reviews.review_id, reviews.title, reviews.category, reviews.designer, reviews.owner, reviews.review_img_url, reviews.created_at, reviews.votes, COUNT(comments.review_id) AS comment_count FROM reviews LEFT JOIN comments ON reviews.review_id=comments.review_id WHERE reviews.review_id = $1 GROUP BY reviews.review_id;`,
+        `SELECT ${reviewSansReviewBody} COUNT(comments.review_id) AS comment_count FROM reviews LEFT JOIN comments ON reviews.review_id=comments.review_id WHERE reviews.review_id = $1 GROUP BY reviews.review_id;`,
         [review_id]
       )
       .then(result => {
@@ -55,12 +57,14 @@ exports.updateReview = (review_id, updates) => {
 exports.selectAllReviews = (
   category,
   sort_by = "created_at",
-  order_by = "DESC"
+  order_by = "DESC",
+  objectKeys
 ) => {
   const validSortColumns = ["created_at", "review_id", "title"];
   const validOrder = ["ASC", "DESC"];
+  const validKeys = ["sort_by", "order_by", "category"];
 
-  let queryStr = `SELECT reviews.*, COUNT(comments.review_id) AS comment_count FROM reviews LEFT JOIN comments ON reviews.review_id=comments.review_id`;
+  let queryStr = `SELECT ${reviewSansReviewBody} COUNT(comments.review_id) AS comment_count FROM reviews LEFT JOIN comments ON reviews.review_id=comments.review_id`;
 
   queryValues = [];
   if (category) {
@@ -69,8 +73,17 @@ exports.selectAllReviews = (
   } else {
     queryStr += ` GROUP BY reviews.review_id`;
   }
-
-  if (!validSortColumns.includes(sort_by) || !validOrder.includes(order_by)) {
+  console.log(objectKeys);
+  console.log(
+    !validSortColumns.includes(sort_by),
+    !validOrder.includes(order_by),
+    !objectKeys.every(currentValue => validKeys.includes(currentValue))
+  );
+  if (
+    !validSortColumns.includes(sort_by) ||
+    !validOrder.includes(order_by) ||
+    !objectKeys.every(currentValue => validKeys.includes(currentValue))
+  ) {
     return Promise.reject({ status: 400, msg: "bad request" });
   }
 

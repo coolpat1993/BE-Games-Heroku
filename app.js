@@ -5,6 +5,7 @@ const {
   viewReviews,
   viewUsers,
   patchReview,
+  getAllReviews,
 } = require("./controllers/controllers");
 
 const app = express();
@@ -20,6 +21,8 @@ app.get("/api/reviews/:review_id", viewReviews);
 app.get("/api/users", viewUsers);
 
 app.patch("/api/reviews/:review_id", patchReview);
+
+app.get("/api/reviews", getAllReviews);
 
 app.use((err, req, res, next) => {
   if (err.hasOwnProperty("status") && err.hasOwnProperty("msg")) {

@@ -44,7 +44,7 @@ describe("GET api/categories", () => {
   });
 });
 
-describe.only("2. GET /api/reviews/:review_id", () => {
+describe("2. GET /api/reviews/:review_id", () => {
   test("status:200, responds with a single matching review", () => {
     const review_id = 2;
     return request(app)
@@ -145,6 +145,71 @@ describe("5. PATCH /api/reviews/:review_id", () => {
         expect(response.body).toEqual({
           status: 400,
           msg: "invalid vote data",
+        });
+      });
+  });
+});
+
+describe("2. GET /api/reviews", () => {
+  test("status:200, responds with every review in DESC order", () => {
+    return request(app)
+      .get(`/api/reviews`)
+      .expect(200)
+      .then(({ body }) => {
+        let review = body.review;
+        expect(review.length).toEqual(13);
+        expect(review).toBeSortedBy("created_at", {
+          descending: true,
+        });
+        review.forEach(review => {
+          expect(review).toEqual(
+            expect.objectContaining({
+              review_id: expect.any(Number),
+              title: expect.any(String),
+              category: expect.any(String),
+              designer: expect.any(String),
+              owner: expect.any(String),
+              review_body: expect.any(String),
+              review_img_url: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              comment_count: expect.any(String),
+            })
+          );
+        });
+      });
+  });
+});
+
+describe("GET api/treasures where filter matches query", () => {
+  it("should return the caregory that matches the input", () => {
+    return request(app)
+      .get("/api/reviews?category=dexterity")
+      .expect(200)
+      .then(response => {
+        expect(response.body.review[0].category).toBe("dexterity");
+      });
+  });
+  it("should return an array of treasures only containg matched query value", () => {
+    return request(app)
+      .get("/api/reviews?category=social deduction")
+      .expect(200)
+      .then(response => {
+        const output = response.body.review;
+        const filteredOutput = output.filter(
+          review => review.category === "social deduction"
+        );
+        expect(output).toEqual(filteredOutput);
+      });
+  });
+  it("should return 404: not found when input contains colour that is not a property value", () => {
+    return request(app)
+      .get("/api/reviews?category=somethingElse")
+      .expect(404)
+      .then(response => {
+        expect(response.body).toEqual({
+          status: 404,
+          msg: "There were no reviews with those parameters",
         });
       });
   });

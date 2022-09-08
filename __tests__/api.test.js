@@ -204,7 +204,7 @@ describe("GET /api/reviews", () => {
   });
   test("status:200, responds with every review sorted by review_id in ASC order", () => {
     return request(app)
-      .get(`/api/reviews?sort_by=review_id&order=ASC`)
+      .get(`/api/reviews?sort_by=review_id&order_by=ASC`)
       .expect(200)
       .then(({ body }) => {
         expect(body.reviews.length).toEqual(13);
@@ -239,6 +239,17 @@ describe("GET api/reviews where filter matches query", () => {
         expect(response.body).toEqual({
           status: 200,
           msg: "There were no reviews with those parameters",
+        });
+      });
+  });
+  it("should return 400: bad request when an incorrect query name is incorrect", () => {
+    return request(app)
+      .get("/api/reviews?thisIsIncorrect=5&sort_by=title")
+      .expect(400)
+      .then(response => {
+        expect(response.body).toEqual({
+          status: 400,
+          msg: "bad request",
         });
       });
   });

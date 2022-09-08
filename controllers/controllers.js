@@ -51,10 +51,18 @@ exports.patchReview = (req, res, next) => {
 
 exports.getAllReviews = (req, res, next) => {
   const sort_by = req.query.sort_by;
-  const order_by = req.query.order;
+  const order_by = req.query.order_by;
   const category = req.query.category;
 
-  selectAllReviews(category, sort_by, order_by)
+  let objectKeys = [];
+
+  if (Object.keys(req.query).length > 0) {
+    objectKeys = Object.keys(req.query);
+  } else {
+    objectKeys = ["category"];
+  }
+
+  selectAllReviews(category, sort_by, order_by, objectKeys)
     .then(reviews => {
       res.status(200).send({ reviews });
     })

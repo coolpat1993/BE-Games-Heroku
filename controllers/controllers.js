@@ -7,7 +7,7 @@ const {
 } = require("../models/models.js");
 
 exports.testExample = (request, response) => {
-  response.status(200).send({ msg: "this is a asdas message" });
+  response.status(200).send({ msg: "this is a message" });
 };
 
 exports.viewCategories = (req, res) => {
@@ -52,7 +52,13 @@ exports.patchReview = (req, res, next) => {
 exports.getAllReviews = (req, res, next) => {
   const sort_by = req.query.sort_by;
   const order_by = req.query.order_by;
-  const category = req.query.category;
+  // const category = req.query.category;
+  let category;
+  for (const [key, value] of Object.entries(req.query)) {
+    if (key !== "sort_by" && key !== "order_by") {
+      category = value;
+    }
+  }
 
   let objectKeys = [];
 

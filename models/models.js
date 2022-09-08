@@ -62,13 +62,18 @@ exports.selectAllReviews = (
 ) => {
   const validSortColumns = ["created_at", "review_id", "title"];
   const validOrder = ["ASC", "DESC"];
-  const validKeys = ["sort_by", "order_by", "category"];
-
+  const validKeys = ["sort_by", "order_by", "category", "votes", "owner"];
   let queryStr = `SELECT ${reviewSansReviewBody} COUNT(comments.review_id) AS comment_count FROM reviews LEFT JOIN comments ON reviews.review_id=comments.review_id`;
+
+  let singleKey = objectKeys.filter(value => {
+    return value !== "sort_by" && "order_by";
+  });
 
   queryValues = [];
   if (category) {
-    queryStr += ` WHERE category = $1 GROUP BY reviews.review_id`;
+    queryStr += ` WHERE reviews.${
+      singleKey[singleKey.length - 1]
+    } = $1 GROUP BY reviews.review_id`;
     queryValues.push(category);
   } else {
     queryStr += ` GROUP BY reviews.review_id`;

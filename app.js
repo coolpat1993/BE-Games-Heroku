@@ -52,6 +52,7 @@ app.use((err, req, res, next) => {
     next(err);
   }
 });
+
 app.use((err, req, res, next) => {
   console.log(err, "caught an error");
 });

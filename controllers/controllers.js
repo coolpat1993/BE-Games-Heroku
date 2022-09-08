@@ -7,7 +7,7 @@ const {
 } = require("../models/models.js");
 
 exports.testExample = (request, response) => {
-  response.status(200).send({ msg: "this is a message" });
+  response.status(200).send({ msg: "this is a asdas message" });
 };
 
 exports.viewCategories = (req, res) => {

@@ -188,7 +188,7 @@ it("status:400, Bad request when review data unavaliable <", () => {
 });
 
 describe("GET /api/reviews", () => {
-  test("status:200, responds with every review in DESC order", () => {
+  test.only("status:200, responds with every review in DESC order", () => {
     return request(app)
       .get(`/api/reviews`)
       .expect(200)

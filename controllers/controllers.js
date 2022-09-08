@@ -53,10 +53,18 @@ exports.getAllReviews = (req, res, next) => {
   const sort_by = req.query.sort_by;
   const order_by = req.query.order_by;
   let category;
+  const storage = [];
+
   for (const [key, value] of Object.entries(req.query)) {
     if (key !== "sort_by" && key !== "order_by") {
-      category = value;
+      storage.push(value);
     }
+  }
+  if (
+    Object.keys(req.query).length !== 0 &&
+    !("order_by" in req.query || "sort_by" in req.query)
+  ) {
+    category = storage;
   }
 
   let objectKeys = [];

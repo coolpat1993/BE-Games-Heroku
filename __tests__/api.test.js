@@ -204,7 +204,7 @@ describe("GET /api/reviews", () => {
   });
   test("status:200, responds with every review sorted by review_id in ASC order", () => {
     return request(app)
-      .get(`/api/reviews?sort_by=review_id&order_by=ASC`)
+      .get(`/api/reviews?order_by=ASC&sort_by=review_id`)
       .expect(200)
       .then(({ body }) => {
         expect(body.reviews.length).toEqual(13);
@@ -255,7 +255,7 @@ describe("GET /api/reviews where filter matches query", () => {
   });
   it("should return an array of objects only containg the last matched query column value", () => {
     return request(app)
-      .get("/api/reviews?category=social+deduction&owner=mallionaire&votes=5")
+      .get("/api/reviews?votes=5&category=social+deduction&owner=mallionaire")
       .expect(200)
       .then(({ body }) => {
         const output = body.reviews;

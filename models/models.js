@@ -71,10 +71,8 @@ exports.selectAllReviews = (
 
   queryValues = [];
   if (category) {
-    queryStr += ` WHERE reviews.${
-      singleKey[singleKey.length - 1]
-    } = $1 GROUP BY reviews.review_id`;
-    queryValues.push(category);
+    queryStr += ` WHERE reviews.${singleKey[0]} = $1 GROUP BY reviews.review_id`;
+    queryValues.push(category[0]);
   } else {
     queryStr += ` GROUP BY reviews.review_id`;
   }

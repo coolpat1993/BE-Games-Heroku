@@ -52,7 +52,6 @@ exports.patchReview = (req, res, next) => {
 exports.getAllReviews = (req, res, next) => {
   const sort_by = req.query.sort_by;
   const order_by = req.query.order_by;
-  // const category = req.query.category;
   let category;
   for (const [key, value] of Object.entries(req.query)) {
     if (key !== "sort_by" && key !== "order_by") {

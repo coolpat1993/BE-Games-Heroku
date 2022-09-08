@@ -34,13 +34,26 @@ app.use((err, req, res, next) => {
 
 app.use((err, req, res, next) => {
   if (err.code == "22P02") {
-    res.status(400).send({ status: 400, msg: "invalid vote data" });
+    res
+      .status(400)
+      .send({ status: 400, msg: "SQL ERROR invalid user data input" });
+  } else {
+    next(err);
+  }
+});
+
+app.use((err, req, res, next) => {
+  if (err.code == "23502") {
+    res.status(400).send({
+      status: 400,
+      msg: "invalid vote data format, use '{inc_votes: Num}'",
+    });
   } else {
     next(err);
   }
 });
 app.use((err, req, res, next) => {
-  console.log(err);
+  console.log(err, "caught an error");
 });
 
 module.exports = app;

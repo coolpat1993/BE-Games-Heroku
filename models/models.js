@@ -73,12 +73,6 @@ exports.selectAllReviews = (
   } else {
     queryStr += ` GROUP BY reviews.review_id`;
   }
-  console.log(objectKeys);
-  console.log(
-    !validSortColumns.includes(sort_by),
-    !validOrder.includes(order_by),
-    !objectKeys.every(currentValue => validKeys.includes(currentValue))
-  );
   if (
     !validSortColumns.includes(sort_by) ||
     !validOrder.includes(order_by) ||

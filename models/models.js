@@ -55,24 +55,32 @@ exports.updateReview = (review_id, updates) => {
 };
 
 exports.selectAllReviews = (
-  category,
+  objectValues,
   sort_by = "created_at",
   order_by = "DESC",
-  objectKeys
+  objectKeys = ["category"]
 ) => {
   const validSortColumns = ["created_at", "review_id", "title"];
   const validOrder = ["ASC", "DESC"];
-  const validKeys = ["sort_by", "order_by", "category"];
-
+  const validKeys = ["sort_by", "order_by", "category", "votes", "owner"];
   let queryStr = `SELECT ${reviewSansReviewBody} COUNT(comments.review_id) AS comment_count FROM reviews LEFT JOIN comments ON reviews.review_id=comments.review_id`;
 
+  let columnName = objectKeys.filter(value => {
+    return value !== "sort_by" && "order_by";
+  });
+
   queryValues = [];
-  if (category) {
-    queryStr += ` WHERE category = $1 GROUP BY reviews.review_id`;
-    queryValues.push(category);
-  } else {
-    queryStr += ` GROUP BY reviews.review_id`;
+
+  if (objectValues.length > 0) {
+    queryStr += ` WHERE reviews.${columnName[0]} = $1`;
+    queryValues.push(objectValues[0]);
+    for (let i = 1; i < objectValues.length; i++) {
+      queryStr += ` AND reviews.${columnName[i]} = $${i + 1}`;
+      queryValues.push(objectValues[i]);
+    }
   }
+
+  queryStr += ` GROUP BY reviews.review_id`;
   if (
     !validSortColumns.includes(sort_by) ||
     !validOrder.includes(order_by) ||

@@ -103,7 +103,7 @@ describe("GET /api/reviews/:review_id", () => {
   });
 });
 
-describe("GET api/users", () => {
+describe("GET /api/users", () => {
   it("should return status: 200, and an array of catagory objects containing the correct keys", () => {
     return request(app)
       .get("/api/users")
@@ -204,7 +204,7 @@ describe("GET /api/reviews", () => {
   });
   test("status:200, responds with every review sorted by review_id in ASC order", () => {
     return request(app)
-      .get(`/api/reviews?sort_by=review_id&order_by=ASC`)
+      .get(`/api/reviews?order_by=ASC&sort_by=review_id`)
       .expect(200)
       .then(({ body }) => {
         expect(body.reviews.length).toEqual(13);
@@ -218,8 +218,8 @@ describe("GET /api/reviews", () => {
   });
 });
 
-describe("GET api/reviews where filter matches query", () => {
-  it("should return an array of objects only containg matched query value", () => {
+describe("GET /api/reviews where filter matches query", () => {
+  it("should return an array of objects only containg matched query column value -- category", () => {
     return request(app)
       .get("/api/reviews?category=social+deduction")
       .expect(200)
@@ -231,9 +231,53 @@ describe("GET api/reviews where filter matches query", () => {
         expect(output).toEqual(filteredOutput);
       });
   });
+  it("should return an array of objects only containg matched query column value -- owner", () => {
+    return request(app)
+      .get("/api/reviews?owner=mallionaire")
+      .expect(200)
+      .then(({ body }) => {
+        const output = body.reviews;
+        const filteredOutput = output.filter(
+          review => review.owner === "mallionaire"
+        );
+        expect(output).toEqual(filteredOutput);
+      });
+  });
+  it("should return an array of objects only containg matched query column value -- votes", () => {
+    return request(app)
+      .get("/api/reviews?votes=5")
+      .expect(200)
+      .then(({ body }) => {
+        const output = body.reviews;
+        const filteredOutput = output.filter(review => review.votes === 5);
+        expect(output).toEqual(filteredOutput);
+      });
+  });
+  it("should return an array of objects only containg the last matched query column value", () => {
+    return request(app)
+      .get("/api/reviews?votes=5&category=social+deduction&owner=mallionaire")
+      .expect(200)
+      .then(({ body }) => {
+        const output = body.reviews;
+        expect(output[0]).toEqual(
+          expect.objectContaining({
+            review_id: expect.any(Number),
+            title: expect.any(String),
+            category: "social deduction",
+            designer: expect.any(String),
+            owner: "mallionaire",
+            review_img_url: expect.any(String),
+            created_at: expect.any(String),
+            votes: 5,
+            comment_count: expect.any(String),
+          })
+        );
+      });
+  });
+
   it("should return 200: not found when input contains category items that is not a property value", () => {
     return request(app)
-      .get("/api/reviews?category=somethingElse")
+      .get("/api/reviews?category=somethingIsWrongHere")
       .expect(200)
       .then(response => {
         expect(response.body).toEqual({
@@ -254,3 +298,5 @@ describe("GET api/reviews where filter matches query", () => {
       });
   });
 });
+
+describe("GET api/reviews where filter matches the last query", () => {});

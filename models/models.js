@@ -58,15 +58,22 @@ exports.selectAllReviews = (
   objectValues,
   sort_by = "created_at",
   order_by = "DESC",
-  objectKeys = ["category"]
+  objectKeys = ["category"],
+  reqQuery
 ) => {
+  for (const [key, value] of Object.entries(reqQuery)) {
+    if (key !== "sort_by" && key !== "order_by") {
+      objectValues.push(value);
+    }
+  }
+
   const validSortColumns = ["created_at", "review_id", "title"];
   const validOrder = ["ASC", "DESC"];
   const validKeys = ["sort_by", "order_by", "category", "votes", "owner"];
   let queryStr = `SELECT ${reviewSansReviewBody} COUNT(comments.review_id) AS comment_count FROM reviews LEFT JOIN comments ON reviews.review_id=comments.review_id`;
 
   let columnName = objectKeys.filter(value => {
-    return value !== "sort_by" && "order_by";
+    return value !== "sort_by" && value !== "order_by";
   });
 
   queryValues = [];
@@ -95,9 +102,27 @@ exports.selectAllReviews = (
       return result.rows;
     } else {
       return Promise.reject({
-        status: 200,
+        status: 400,
         msg: "There were no reviews with those parameters",
       });
     }
   });
+};
+
+exports.selectComments = review_id => {
+  return db
+    .query(
+      `SELECT comments.* FROM comments LEFT JOIN reviews ON comments.review_id=reviews.review_id LEFT JOIN users ON comments.author=users.username WHERE reviews.review_id = $1;`,
+      [review_id]
+    )
+    .then(result => {
+      if (result.rows.length >= 1) {
+        return result.rows[0];
+      } else {
+        return Promise.reject({
+          status: 404,
+          msg: "This review was not found",
+        });
+      }
+    });
 };

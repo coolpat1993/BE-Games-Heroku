@@ -4,6 +4,7 @@ const {
   selectUsers,
   updateReview,
   selectAllReviews,
+  selectComments,
 } = require("../models/models.js");
 
 exports.testExample = (request, response) => {
@@ -50,23 +51,26 @@ exports.patchReview = (req, res, next) => {
 };
 
 exports.getAllReviews = (req, res, next) => {
+  const objectValues = [];
   const sort_by = req.query.sort_by;
   const order_by = req.query.order_by;
-  const category = [];
+  const objectKeys = Object.keys(req.query);
+  const reqQuery = req.query;
 
-  for (const [key, value] of Object.entries(req.query)) {
-    if (key !== "sort_by" && key !== "order_by") {
-      category.push(value);
-    }
-  }
-
-  let objectKeys = [];
-
-  objectKeys = Object.keys(req.query);
-
-  selectAllReviews(category, sort_by, order_by, objectKeys)
+  selectAllReviews(objectValues, sort_by, order_by, objectKeys, reqQuery)
     .then(reviews => {
       res.status(200).send({ reviews });
+    })
+    .catch(err => {
+      next(err);
+    });
+};
+
+exports.viewComments = (req, res, next) => {
+  const { review_id } = req.params;
+  selectComments(review_id)
+    .then(comment_by_id => {
+      res.status(200).send({ comment: comment_by_id });
     })
     .catch(err => {
       next(err);

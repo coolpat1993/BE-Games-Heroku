@@ -58,15 +58,22 @@ exports.selectAllReviews = (
   objectValues,
   sort_by = "created_at",
   order_by = "DESC",
-  objectKeys = ["category"]
+  objectKeys = ["category"],
+  reqQuery
 ) => {
+  for (const [key, value] of Object.entries(reqQuery)) {
+    if (key !== "sort_by" && key !== "order_by") {
+      objectValues.push(value);
+    }
+  }
+
   const validSortColumns = ["created_at", "review_id", "title"];
   const validOrder = ["ASC", "DESC"];
   const validKeys = ["sort_by", "order_by", "category", "votes", "owner"];
   let queryStr = `SELECT ${reviewSansReviewBody} COUNT(comments.review_id) AS comment_count FROM reviews LEFT JOIN comments ON reviews.review_id=comments.review_id`;
 
   let columnName = objectKeys.filter(value => {
-    return value !== "sort_by" && "order_by";
+    return value !== "sort_by" && value !== "order_by";
   });
 
   queryValues = [];
@@ -95,7 +102,7 @@ exports.selectAllReviews = (
       return result.rows;
     } else {
       return Promise.reject({
-        status: 200,
+        status: 400,
         msg: "There were no reviews with those parameters",
       });
     }

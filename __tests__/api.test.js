@@ -202,6 +202,20 @@ describe("GET /api/reviews", () => {
         });
       });
   });
+  test("status:200, responds with every sorted review", () => {
+    return request(app)
+      .get(`/api/reviews?sort_by=review_id`)
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.reviews.length).toEqual(13);
+        expect(body.reviews).toBeSortedBy("review_id", {
+          descending: true,
+        });
+        body.reviews.forEach(body => {
+          expect(body).toEqual(expect.objectContaining(reviewObject));
+        });
+      });
+  });
   test("status:200, responds with every review sorted by review_id in ASC order", () => {
     return request(app)
       .get(`/api/reviews?order_by=ASC&sort_by=review_id`)
@@ -253,13 +267,19 @@ describe("GET /api/reviews where filter matches query", () => {
         expect(output).toEqual(filteredOutput);
       });
   });
-  it("should return an array of objects only containg the last matched query column value", () => {
+  it("should return an array of objects only containg every matched query column value and is ordered by review_id ascending", () => {
     return request(app)
-      .get("/api/reviews?votes=5&category=social+deduction&owner=mallionaire")
+      .get(
+        "/api/reviews?votes=5&category=social+deduction&owner=mallionaire&sort_by=review_id&order_by=ASC"
+      )
       .expect(200)
       .then(({ body }) => {
         const output = body.reviews;
-        expect(output[0]).toEqual(
+        expect(output.length).toEqual(2);
+        expect(output).toBeSortedBy("review_id", {
+          descending: false,
+        });
+        expect(output[(0, 1)]).toEqual(
           expect.objectContaining({
             review_id: expect.any(Number),
             title: expect.any(String),
@@ -278,15 +298,15 @@ describe("GET /api/reviews where filter matches query", () => {
   it("should return 200: not found when input contains category items that is not a property value", () => {
     return request(app)
       .get("/api/reviews?category=somethingIsWrongHere")
-      .expect(200)
+      .expect(400)
       .then(response => {
         expect(response.body).toEqual({
-          status: 200,
+          status: 400,
           msg: "There were no reviews with those parameters",
         });
       });
   });
-  it("should return 400: bad request when an incorrect query name is incorrect", () => {
+  it("should return 400: bad request when query name is incorrect", () => {
     return request(app)
       .get("/api/reviews?thisIsIncorrect=5&sort_by=title")
       .expect(400)
@@ -299,16 +319,42 @@ describe("GET /api/reviews where filter matches query", () => {
   });
 });
 
-// describe("GET api/reviews/:review_id/comments", () => {
-//   it("should return 200: bad request when an incorrect query name is incorrect", () => {
-//     return request(app)
-//       .get("/api/reviews/2/comments")
-//       .expect(200)
-//       .then(response => {
-//         expect(response.body).toEqual({
-//           status: 200,
-//           msg: "bad request",
-//         });
-//       });
-//   });
-// });
+describe("GET api/reviews/:review_id/comments", () => {
+  it("should return 200: bad request when query name is incorrect", () => {
+    return request(app)
+      .get("/api/reviews/2/comments")
+      .expect(200)
+      .then(response => {
+        expect(response.body.comment).toEqual({
+          author: "bainesface",
+          body: "I loved this game too!",
+          comment_id: 1,
+          created_at: "2017-11-22T12:43:33.389Z",
+          review_id: 2,
+          votes: 16,
+        });
+      });
+  });
+  it("should return 400: Error when reviews/:review_id is not a number", () => {
+    return request(app)
+      .get("/api/reviews/notNumber/comments")
+      .expect(400)
+      .then(response => {
+        expect(response.body).toEqual({
+          status: 400,
+          msg: "SQL ERROR invalid user data input",
+        });
+      });
+  });
+  it("should return 404: Error when reviews/:review_id does not exist", () => {
+    return request(app)
+      .get("/api/reviews/9999/comments")
+      .expect(404)
+      .then(response => {
+        expect(response.body).toEqual({
+          status: 404,
+          msg: "This review was not found",
+        });
+      });
+  });
+});

@@ -259,8 +259,20 @@ describe("GET /api/reviews where filter matches query", () => {
       .expect(200)
       .then(({ body }) => {
         const output = body.reviews;
-        const filteredOutput = output.filter(review => review.votes === 5);
-        expect(output).toEqual(filteredOutput);
+        console.log(output[0]);
+        expect(output[0]).toEqual(
+          expect.objectContaining({
+            review_id: expect.any(Number),
+            title: expect.any(String),
+            category: "social deduction",
+            designer: expect.any(String),
+            owner: "mallionaire",
+            review_img_url: expect.any(String),
+            created_at: expect.any(String),
+            votes: 5,
+            comment_count: expect.any(String),
+          })
+        );
       });
   });
 

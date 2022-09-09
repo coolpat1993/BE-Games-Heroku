@@ -259,7 +259,6 @@ describe("GET /api/reviews where filter matches query", () => {
       .expect(200)
       .then(({ body }) => {
         const output = body.reviews;
-        console.log(output[0]);
         expect(output[0]).toEqual(
           expect.objectContaining({
             review_id: expect.any(Number),

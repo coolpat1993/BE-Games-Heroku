@@ -299,16 +299,16 @@ describe("GET /api/reviews where filter matches query", () => {
   });
 });
 
-describe("GET api/reviews/:review_id/comments", () => {
-  it("should return 200: bad request when an incorrect query name is incorrect", () => {
-    return request(app)
-      .get("/api/reviews/2/comments")
-      .expect(200)
-      .then(response => {
-        expect(response.body).toEqual({
-          status: 200,
-          msg: "bad request",
-        });
-      });
-  });
-});
+// describe("GET api/reviews/:review_id/comments", () => {
+//   it("should return 200: bad request when an incorrect query name is incorrect", () => {
+//     return request(app)
+//       .get("/api/reviews/2/comments")
+//       .expect(200)
+//       .then(response => {
+//         expect(response.body).toEqual({
+//           status: 200,
+//           msg: "bad request",
+//         });
+//       });
+//   });
+// });

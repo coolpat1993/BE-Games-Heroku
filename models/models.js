@@ -101,3 +101,21 @@ exports.selectAllReviews = (
     }
   });
 };
+
+exports.selectComments = review_id => {
+  return db
+    .query(
+      `SELECT comments.* FROM comments LEFT JOIN reviews ON comments.review_id=reviews.review_id LEFT JOIN users ON comments.author=users.username WHERE reviews.review_id = $1;`,
+      [review_id]
+    )
+    .then(result => {
+      if (result.rows.length >= 1) {
+        return result.rows[0];
+      } else {
+        return Promise.reject({
+          status: 404,
+          msg: "This review was not found",
+        });
+      }
+    });
+};

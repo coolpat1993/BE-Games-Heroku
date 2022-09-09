@@ -4,6 +4,7 @@ const {
   selectUsers,
   updateReview,
   selectAllReviews,
+  selectComments,
 } = require("../models/models.js");
 
 exports.testExample = (request, response) => {
@@ -67,6 +68,17 @@ exports.getAllReviews = (req, res, next) => {
   selectAllReviews(category, sort_by, order_by, objectKeys)
     .then(reviews => {
       res.status(200).send({ reviews });
+    })
+    .catch(err => {
+      next(err);
+    });
+};
+
+exports.viewComments = (req, res, next) => {
+  const { review_id } = req.params;
+  selectComments(review_id)
+    .then(comment_by_id => {
+      res.status(200).send({ comment: comment_by_id });
     })
     .catch(err => {
       next(err);

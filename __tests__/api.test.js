@@ -188,7 +188,7 @@ it("status:400, Bad request when review data unavaliable <", () => {
 });
 
 describe("GET /api/reviews", () => {
-  test.only("status:200, responds with every review in DESC order", () => {
+  test("status:200, responds with every review in DESC order", () => {
     return request(app)
       .get(`/api/reviews`)
       .expect(200)
@@ -320,7 +320,7 @@ describe("GET /api/reviews where filter matches query", () => {
 });
 
 describe("GET api/reviews/:review_id/comments", () => {
-  it("should return 200: bad request when query name is incorrect", () => {
+  it("should return 200: responds with a comment object based on review_id", () => {
     return request(app)
       .get("/api/reviews/2/comments")
       .expect(200)
@@ -346,14 +346,25 @@ describe("GET api/reviews/:review_id/comments", () => {
         });
       });
   });
-  it("should return 404: Error when reviews/:review_id does not exist", () => {
+  it("should return 400: Error when review does not exist", () => {
     return request(app)
       .get("/api/reviews/9999/comments")
-      .expect(404)
+      .expect(400)
       .then(response => {
         expect(response.body).toEqual({
-          status: 404,
+          status: 400,
           msg: "This review was not found",
+        });
+      });
+  });
+  it("should return 200: Error when review does exist but the comment does not exist", () => {
+    return request(app)
+      .get("/api/reviews/1/comments")
+      .expect(200)
+      .then(response => {
+        expect(response.body).toEqual({
+          status: 200,
+          msg: "This comment was not found",
         });
       });
   });

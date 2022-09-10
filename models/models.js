@@ -152,7 +152,11 @@ exports.insertComment = ({ body, author }, urlId) => {
   return db
     .query(`SELECT * FROM reviews WHERE review_id = $1`, [urlId])
     .then(result => {
-      if (result.rows.length === 1 && urlId > 0) {
+      if (
+        (result.rows.length === 1 && urlId > 0) ||
+        body === undefined ||
+        author === undefined
+      ) {
         return db
           .query(
             `INSERT INTO comments (body, review_id, author) 
@@ -169,4 +173,12 @@ exports.insertComment = ({ body, author }, urlId) => {
         });
       }
     });
+};
+
+exports.removeById = comment_id => {
+  return db
+    .query("DELETE FROM comments WHERE comment_id = $1 RETURNING *", [
+      comment_id,
+    ])
+    .then(() => {});
 };

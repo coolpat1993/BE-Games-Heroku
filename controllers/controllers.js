@@ -6,10 +6,13 @@ const {
   selectAllReviews,
   selectComments,
   insertComment,
+  removeById,
 } = require("../models/models.js");
 
-exports.testExample = (request, response) => {
-  response.status(200).send({ msg: "this is a message" });
+const api = require("../endpoints.json");
+
+exports.getApi = (req, res) => {
+  res.status(200).send(api);
 };
 
 exports.viewCategories = (req, res) => {
@@ -84,6 +87,17 @@ exports.postComment = (req, res, next) => {
   insertComment(newComment, review_id)
     .then(newComment => {
       res.status(201).send(newComment);
+    })
+    .catch(err => {
+      next(err);
+    });
+};
+
+exports.deleteCommentById = (req, res) => {
+  const comment_id = req.params.comment_id;
+  removeById(comment_id)
+    .then(() => {
+      res.status(204).send();
     })
     .catch(err => {
       next(err);

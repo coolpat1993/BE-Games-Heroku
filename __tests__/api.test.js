@@ -34,13 +34,16 @@ reviewObject = {
   comment_count: expect.any(String),
 };
 
-describe("GET test example", () => {
-  it("should return status: 200 - message object", () => {
+describe("GET api/", () => {
+  it("should return status: 200 - returns a description of how the api works", () => {
     return request(app)
       .get("/api/")
       .expect(200)
       .then(response => {
-        expect(response.body).toEqual({ msg: "this is a message" });
+        expect(response.body["GET /api"]).toEqual({
+          description:
+            "serves up a json representation of all the available endpoints of the api",
+        });
       });
   });
 });
@@ -169,32 +172,32 @@ describe("PATCH /api/reviews/:review_id", () => {
         });
       });
   });
-});
-it("status:400, responds with an error when incorrect data format is used", () => {
-  const updatedVote = { votes: 5 };
-  return request(app)
-    .patch("/api/reviews/3")
-    .send(updatedVote)
-    .expect(400)
-    .then(response => {
-      expect(response.body).toEqual({
-        status: 400,
-        msg: "invalid vote data format, use '{inc_votes: Num}'",
+  it("status:400, Bad request when review data unavaliable <", () => {
+    const updatedVote = { inc_votes: 5 };
+    return request(app)
+      .patch("/api/reviews/3000")
+      .send(updatedVote)
+      .expect(400)
+      .then(response => {
+        expect(response.body).toEqual({
+          status: 400,
+          msg: "This data is unreachable at this time",
+        });
       });
-    });
-});
-it("status:400, Bad request when review data unavaliable <", () => {
-  const updatedVote = { inc_votes: 5 };
-  return request(app)
-    .patch("/api/reviews/3000")
-    .send(updatedVote)
-    .expect(400)
-    .then(response => {
-      expect(response.body).toEqual({
-        status: 400,
-        msg: "This data is unreachable at this time",
+  });
+  it("status:400, responds with an error when incorrect data format is used", () => {
+    const updatedVote = { votes: 5 };
+    return request(app)
+      .patch("/api/reviews/3")
+      .send(updatedVote)
+      .expect(400)
+      .then(response => {
+        expect(response.body).toEqual({
+          status: 400,
+          msg: "invalid/missing POST data",
+        });
       });
-    });
+  });
 });
 
 describe("GET /api/reviews", () => {
@@ -404,7 +407,7 @@ describe("POST /api/reviews/:review_id/comments", () => {
         expect(comment.created_at.substring(0, 17)).toEqual(currentTime);
       });
   });
-  it("should return 400: responds with and object containing the correct keys", () => {
+  it("should return 400: responds with an error that the review does not exist", () => {
     const newComment = {
       body: "My dog loved this game too!",
       author: "mallionaire",
@@ -419,5 +422,26 @@ describe("POST /api/reviews/:review_id/comments", () => {
           msg: "There was no review with this review_id",
         });
       });
+  });
+  it("CHANGE ME", () => {
+    const newComment = {
+      body: "My dog loved this game too!",
+    };
+    return request(app)
+      .post("/api/reviews/2/comments")
+      .send(newComment)
+      .expect(400)
+      .then(response => {
+        expect(response.body).toEqual({
+          status: 400,
+          msg: "invalid/missing POST data",
+        });
+      });
+  });
+});
+
+describe("4. DELETE /parks/:id", () => {
+  test("status:204, responds with an empty response body", () => {
+    return request(app).delete("/api/comments/2").expect(204);
   });
 });

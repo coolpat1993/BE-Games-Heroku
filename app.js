@@ -1,6 +1,6 @@
 const express = require("express");
+
 const {
-  testExample,
   viewCategories,
   viewReviews,
   viewUsers,
@@ -8,13 +8,15 @@ const {
   getAllReviews,
   viewComments,
   postComment,
+  deleteCommentById,
+  getApi,
 } = require("./controllers/controllers");
 
 const app = express();
 
 app.use(express.json());
 
-app.get("/api/", testExample);
+app.get("/api/", getApi);
 
 app.get("/api/categories", viewCategories);
 
@@ -29,6 +31,8 @@ app.get("/api/reviews", getAllReviews);
 app.get("/api/reviews/:review_id/comments", viewComments);
 
 app.post("/api/reviews/:review_id/comments", postComment);
+
+app.delete("/api/comments/:comment_id", deleteCommentById);
 
 app.use((err, req, res, next) => {
   if (err.hasOwnProperty("status") && err.hasOwnProperty("msg")) {
@@ -52,7 +56,7 @@ app.use((err, req, res, next) => {
   if (err.code == "23502") {
     res.status(400).send({
       status: 400,
-      msg: "invalid vote data format, use '{inc_votes: Num}'",
+      msg: "invalid/missing POST data",
     });
   } else {
     next(err);

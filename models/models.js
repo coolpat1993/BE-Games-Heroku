@@ -132,7 +132,7 @@ exports.selectComments = review_id => {
           )
           .then(result => {
             if (result.rows.length > 0) {
-              return result.rows[0];
+              return result.rows;
             } else {
               return Promise.reject({
                 status: 200,

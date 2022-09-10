@@ -338,7 +338,8 @@ describe("GET api/reviews/:review_id/comments", () => {
       .get("/api/reviews/2/comments")
       .expect(200)
       .then(response => {
-        expect(response.body.comment).toEqual({
+        expect(response.body.comment.length).toEqual(3);
+        expect(response.body.comment[0]).toEqual({
           author: "bainesface",
           body: "I loved this game too!",
           comment_id: 1,
@@ -440,7 +441,7 @@ describe("POST /api/reviews/:review_id/comments", () => {
   });
 });
 
-describe("4. DELETE /parks/:id", () => {
+describe("4. /api/comments/:comment_id ", () => {
   test("status:204, responds with an empty response body", () => {
     return request(app).delete("/api/comments/2").expect(204);
   });

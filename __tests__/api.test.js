@@ -3,6 +3,16 @@ const app = require("../app");
 const db = require("../db/connection");
 const seed = require("../db/seeds/seed");
 const data = require("../db/data/test-data");
+const {
+  convertTimestampToDate,
+  createRef,
+  formatComments,
+} = require("../db/seeds/utils");
+
+const input = { created_at: Date.now() };
+let currentTime = JSON.stringify(
+  convertTimestampToDate(input).created_at
+).substring(1, 18);
 
 beforeEach(() => {
   return seed(data);
@@ -270,7 +280,7 @@ describe("GET /api/reviews where filter matches query", () => {
   it("should return an array of objects only containg every matched query column value and is ordered by review_id ascending", () => {
     return request(app)
       .get(
-        "/api/reviews?votes=5&category=social+deduction&owner=mallionaire&sort_by=review_id&order_by=ASC"
+        "/api/reviews?votes=5&category=social+deduction&owner=mallionaire&sort_by=review_id&order_by=ASC&"
       )
       .expect(200)
       .then(({ body }) => {
@@ -365,6 +375,48 @@ describe("GET api/reviews/:review_id/comments", () => {
         expect(response.body).toEqual({
           status: 200,
           msg: "This comment was not found",
+        });
+      });
+  });
+});
+
+describe("POST /api/reviews/:review_id/comments", () => {
+  it("should return 201: responds with and object containing the correct keys", () => {
+    const newComment = {
+      body: "My dog loved this game too!",
+      author: "mallionaire",
+    };
+    return request(app)
+      .post("/api/reviews/2/comments")
+      .send(newComment)
+      .expect(201)
+      .then(response => {
+        const comment = response.body;
+        expect.objectContaining({
+          comment_id: expect.any(Number),
+          body: expect.any(String),
+          review_id: expect.any(Number),
+          author: expect.any(String),
+          created_at: expect.any(String),
+          votes: expect.any(Number),
+        });
+
+        expect(comment.created_at.substring(0, 17)).toEqual(currentTime);
+      });
+  });
+  it("should return 400: responds with and object containing the correct keys", () => {
+    const newComment = {
+      body: "My dog loved this game too!",
+      author: "mallionaire",
+    };
+    return request(app)
+      .post("/api/reviews/14/comments")
+      .send(newComment)
+      .expect(400)
+      .then(response => {
+        expect(response.body).toEqual({
+          status: 400,
+          msg: "There was no review with this review_id",
         });
       });
   });

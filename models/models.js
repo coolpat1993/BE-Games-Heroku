@@ -69,7 +69,15 @@ exports.selectAllReviews = (
 
   const validSortColumns = ["created_at", "review_id", "title"];
   const validOrder = ["ASC", "DESC"];
-  const validKeys = ["sort_by", "order_by", "category", "votes", "owner"];
+  const validKeys = [
+    "sort_by",
+    "order_by",
+    "category",
+    "votes",
+    "owner",
+    "title",
+    "designer",
+  ];
   let queryStr = `SELECT ${reviewSansReviewBody} COUNT(comments.review_id) AS comment_count FROM reviews LEFT JOIN comments ON reviews.review_id=comments.review_id`;
 
   let columnName = objectKeys.filter(value => {
@@ -136,6 +144,28 @@ exports.selectComments = review_id => {
         return Promise.reject({
           status: 400,
           msg: "This review was not found",
+        });
+      }
+    });
+};
+exports.insertComment = ({ body, author }, urlId) => {
+  return db
+    .query(`SELECT * FROM reviews WHERE review_id = $1`, [urlId])
+    .then(result => {
+      if (result.rows.length === 1 && urlId > 0) {
+        return db
+          .query(
+            `INSERT INTO comments (body, review_id, author) 
+  VALUES ($1, $2, $3) RETURNING *;`,
+            [body, urlId, author]
+          )
+          .then(result => {
+            return result.rows[0];
+          });
+      } else {
+        return Promise.reject({
+          status: 400,
+          msg: "There was no review with this review_id",
         });
       }
     });

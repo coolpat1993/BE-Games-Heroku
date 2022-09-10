@@ -5,6 +5,7 @@ const {
   updateReview,
   selectAllReviews,
   selectComments,
+  insertComment,
 } = require("../models/models.js");
 
 exports.testExample = (request, response) => {
@@ -71,6 +72,18 @@ exports.viewComments = (req, res, next) => {
   selectComments(review_id)
     .then(comment_by_id => {
       res.status(200).send({ comment: comment_by_id });
+    })
+    .catch(err => {
+      next(err);
+    });
+};
+
+exports.postComment = (req, res, next) => {
+  const review_id = req.params.review_id;
+  const newComment = req.body;
+  insertComment(newComment, review_id)
+    .then(newComment => {
+      res.status(201).send(newComment);
     })
     .catch(err => {
       next(err);

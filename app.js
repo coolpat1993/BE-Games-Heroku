@@ -7,6 +7,7 @@ const {
   patchReview,
   getAllReviews,
   viewComments,
+  postComment,
 } = require("./controllers/controllers");
 
 const app = express();
@@ -26,6 +27,8 @@ app.patch("/api/reviews/:review_id", patchReview);
 app.get("/api/reviews", getAllReviews);
 
 app.get("/api/reviews/:review_id/comments", viewComments);
+
+app.post("/api/reviews/:review_id/comments", postComment);
 
 app.use((err, req, res, next) => {
   if (err.hasOwnProperty("status") && err.hasOwnProperty("msg")) {

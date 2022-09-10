@@ -394,8 +394,8 @@ describe("POST /api/reviews/:review_id/comments", () => {
       .post("/api/reviews/2/comments")
       .send(newComment)
       .expect(201)
-      .then(response => {
-        const comment = response.body;
+      .then(({ body }) => {
+        const comment = body.newComment;
         expect.objectContaining({
           comment_id: expect.any(Number),
           body: expect.any(String),

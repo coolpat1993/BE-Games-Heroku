@@ -86,7 +86,7 @@ exports.postComment = (req, res, next) => {
   const newComment = req.body;
   insertComment(newComment, review_id)
     .then(newComment => {
-      res.status(201).send(newComment);
+      res.status(201).send({ newComment });
     })
     .catch(err => {
       next(err);

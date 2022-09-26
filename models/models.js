@@ -6,7 +6,7 @@ exports.selectCategories = () => {
   });
 };
 
-const reviewSansReviewBody = `reviews.review_id, reviews.title, reviews.category, reviews.designer, reviews.owner, reviews.review_img_url, reviews.created_at, reviews.votes,`;
+const reviewSansReviewBody = `reviews.review_id, reviews.review_body, reviews.title, reviews.category, reviews.designer, reviews.owner, reviews.review_img_url, reviews.created_at, reviews.votes,`;
 
 exports.selectReviews = review_id => {
   if (isNaN(review_id) === true) {

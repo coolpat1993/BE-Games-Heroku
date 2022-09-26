@@ -83,6 +83,7 @@ describe("GET /api/reviews/:review_id", () => {
             "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
           votes: 5,
           category: "dexterity",
+          review_body: "Fiddly fun for all the family",
           owner: "philippaclaire9",
           designer: "Leslie Scott",
           created_at: "2021-01-18T10:01:41.251Z",

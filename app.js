@@ -1,5 +1,7 @@
 const express = require("express");
 
+const cors = require("cors");
+
 const {
   viewCategories,
   viewReviews,
@@ -14,6 +16,7 @@ const {
 
 const app = express();
 
+app.use(cors());
 app.use(express.json());
 
 app.get("/api/", getApi);
@@ -53,7 +56,7 @@ app.use((err, req, res, next) => {
 });
 
 app.use((err, req, res, next) => {
-  if (err.code == "23502") {
+  if (err.code == "23502" || err.code == "23503") {
     res.status(400).send({
       status: 400,
       msg: "invalid/missing POST data",

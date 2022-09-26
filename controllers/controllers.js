@@ -74,7 +74,7 @@ exports.viewComments = (req, res, next) => {
   const { review_id } = req.params;
   selectComments(review_id)
     .then(comment_by_id => {
-      res.status(200).send({ comment: comment_by_id });
+      res.status(200).send({ comments: comment_by_id });
     })
     .catch(err => {
       next(err);

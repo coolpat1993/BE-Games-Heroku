@@ -252,6 +252,7 @@ describe("GET /api/reviews where filter matches query", () => {
       .expect(200)
       .then(({ body }) => {
         const output = body.reviews;
+        expect(output.length >= 1).toEqual(true);
         const filteredOutput = output.filter(
           review => review.category === "social deduction"
         );
@@ -307,8 +308,7 @@ describe("GET /api/reviews where filter matches query", () => {
         );
       });
   });
-
-  it("should return 200: not found when input contains category items that is not a property value", () => {
+  it("should return 400: not found when input contains category items that is not a property value", () => {
     return request(app)
       .get("/api/reviews?category=somethingIsWrongHere")
       .expect(400)
@@ -338,8 +338,8 @@ describe("GET api/reviews/:review_id/comments", () => {
       .get("/api/reviews/2/comments")
       .expect(200)
       .then(response => {
-        expect(response.body.comment.length).toEqual(3);
-        expect(response.body.comment[0]).toEqual({
+        expect(response.body.comments.length).toEqual(3);
+        expect(response.body.comments[0]).toEqual({
           author: "bainesface",
           body: "I loved this game too!",
           comment_id: 1,
@@ -408,7 +408,7 @@ describe("POST /api/reviews/:review_id/comments", () => {
         expect(comment.created_at.substring(0, 17)).toEqual(currentTime);
       });
   });
-  it("should return 400: responds with an error that the review does not exist", () => {
+  it("should return 400: responds with an error that there is no review by this Id", () => {
     const newComment = {
       body: "My dog loved this game too!",
       author: "mallionaire",
@@ -424,9 +424,25 @@ describe("POST /api/reviews/:review_id/comments", () => {
         });
       });
   });
-  it("CHANGE ME", () => {
+  it("should return 400: responds with an error that there is missing post data", () => {
     const newComment = {
       body: "My dog loved this game too!",
+    };
+    return request(app)
+      .post("/api/reviews/2/comments")
+      .send(newComment)
+      .expect(400)
+      .then(response => {
+        expect(response.body).toEqual({
+          status: 400,
+          msg: "invalid/missing POST data",
+        });
+      });
+  });
+  it("should return 400: responds with an error that there is missing post data", () => {
+    const newComment = {
+      body: "My dog loved this game too!",
+      author: "A-RANDOM-USERNAME-THAT-DOESNT-EXIST",
     };
     return request(app)
       .post("/api/reviews/2/comments")

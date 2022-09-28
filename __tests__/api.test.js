@@ -285,7 +285,7 @@ describe("GET /api/reviews where filter matches query", () => {
   it("should return an array of objects only containg every matched query column value and is ordered by review_id ascending", () => {
     return request(app)
       .get(
-        "/api/reviews?votes=5&category=social+deduction&owner=mallionaire&sort_by=review_id&order_by=ASC&"
+        "/api/reviews?votes=5&category=ocial&owner=mallionaire&sort_by=review_id&order_by=ASC&"
       )
       .expect(200)
       .then(({ body }) => {

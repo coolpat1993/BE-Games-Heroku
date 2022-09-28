@@ -92,12 +92,29 @@ exports.selectAllReviews = (
 
   queryValues = [];
 
+  let likeEqual = "=";
+
   if (objectValues.length > 0) {
-    queryStr += ` WHERE reviews.${columnName[0]} = $1`;
-    queryValues.push(objectValues[0]);
+    if (columnName[0] === "votes") {
+      likeEqual = "=";
+      queryStr += ` WHERE reviews.${columnName[0]} ${likeEqual} $1`;
+      queryValues.push(`${objectValues[0]}`);
+    } else {
+      likeEqual = "LIKE";
+      queryStr += ` WHERE reviews.${columnName[0]} ${likeEqual} $1`;
+      queryValues.push(`%${objectValues[0]}%`);
+    }
+
     for (let i = 1; i < objectValues.length; i++) {
-      queryStr += ` AND reviews.${columnName[i]} = $${i + 1}`;
-      queryValues.push(objectValues[i]);
+      if (columnName[i] === "votes") {
+        likeEqual = "=";
+        queryStr += ` AND reviews.${columnName[i]} ${likeEqual} $${i + 1}`;
+        queryValues.push(`${objectValues[i]}`);
+      } else {
+        likeEqual = "LIKE";
+        queryStr += ` AND reviews.${columnName[i]} ${likeEqual} $${i + 1}`;
+        queryValues.push(`%${objectValues[i]}%`);
+      }
     }
   }
 

@@ -67,7 +67,7 @@ exports.selectAllReviews = (
     }
   }
 
-  const validSortColumns = ["created_at", "review_id", "title"];
+  const validSortColumns = ["created_at", "review_id", "title", 'votes', 'comments'];
   const validOrder = ["ASC", "DESC"];
   const validKeys = [
     "sort_by",

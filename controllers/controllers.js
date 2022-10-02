@@ -7,6 +7,7 @@ const {
   selectComments,
   insertComment,
   removeById,
+  insertReview,
 } = require("../models/models.js");
 
 const api = require("../endpoints.json");
@@ -87,6 +88,17 @@ exports.postComment = (req, res, next) => {
   insertComment(newComment, review_id)
     .then(newComment => {
       res.status(201).send({ newComment });
+    })
+    .catch(err => {
+      next(err);
+    });
+};
+
+exports.postReview = (req, res, next) => {
+  const newReview = req.body;
+  insertReview(newReview)
+    .then(newReview => {
+      res.status(201).send({ newReview });
     })
     .catch(err => {
       next(err);

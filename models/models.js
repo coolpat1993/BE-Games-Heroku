@@ -198,6 +198,26 @@ exports.insertComment = ({ body, author }, urlId) => {
     });
 };
 
+exports.insertReview = ({
+  owner,
+  title,
+  review_body,
+  review_img_url,
+  designer,
+  category,
+}) => {
+  return db
+    .query(
+      `INSERT INTO reviews (owner, title, review_body, review_img_url, designer, category) 
+  VALUES ($1, $2, $3, $4, $5, $6) RETURNING *;`,
+      [owner, title, review_body, review_img_url, designer, category]
+    )
+    .then(result => {
+      result.rows[0].comment_count = 0;
+      return result.rows[0];
+    });
+};
+
 exports.removeById = comment_id => {
   return db
     .query("DELETE FROM comments WHERE comment_id = $1 RETURNING *", [

@@ -34,6 +34,19 @@ reviewObject = {
   comment_count: expect.any(String),
 };
 
+reviewObjectBody = {
+  review_id: expect.any(Number),
+  title: expect.any(String),
+  category: expect.any(String),
+  designer: expect.any(String),
+  owner: expect.any(String),
+  review_img_url: expect.any(String),
+  review_body: expect.any(String),
+  created_at: expect.any(String),
+  votes: expect.any(Number),
+  comment_count: expect.any(Number),
+};
+
 describe("GET api/", () => {
   it("should return status: 200 - returns a description of how the api works", () => {
     return request(app)
@@ -461,5 +474,28 @@ describe("POST /api/reviews/:review_id/comments", () => {
 describe("4. /api/comments/:comment_id ", () => {
   test("status:204, responds with an empty response body", () => {
     return request(app).delete("/api/comments/2").expect(204);
+  });
+});
+
+describe("POST /api/reviews/:review_id/comments", () => {
+  it("should return 201: responds with and object containing the correct keys", () => {
+    const newReview = {
+      title: "TestTitle",
+      designer: "TestDesigner",
+      owner: "mallionaire",
+      review_img_url:
+        "https://images.pexels.com/photos/163064/play-stone-network-networked-interactive-163064.jpeg",
+      review_body: "Test review body",
+      category: "social deduction",
+    };
+    return request(app)
+      .post("/api/reviews")
+      .send(newReview)
+      .expect(201)
+      .then(({ body }) => {
+        const review = body.newReview;
+        console.log(review);
+        expect(review).toEqual(expect.objectContaining(reviewObjectBody));
+      });
   });
 });

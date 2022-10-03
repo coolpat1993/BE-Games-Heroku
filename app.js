@@ -13,6 +13,7 @@ const {
   deleteCommentById,
   getApi,
   postReview,
+  viewMisc,
 } = require("./controllers/controllers");
 
 const app = express();
@@ -39,6 +40,8 @@ app.post("/api/reviews/:review_id/comments", postComment);
 app.delete("/api/comments/:comment_id", deleteCommentById);
 
 app.post("/api/reviews", postReview);
+
+app.get("/api/misc", viewMisc);
 
 app.use((err, req, res, next) => {
   if (err.hasOwnProperty("status") && err.hasOwnProperty("msg")) {

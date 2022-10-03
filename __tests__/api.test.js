@@ -494,8 +494,18 @@ describe("POST /api/reviews/:review_id/comments", () => {
       .expect(201)
       .then(({ body }) => {
         const review = body.newReview;
-        console.log(review);
         expect(review).toEqual(expect.objectContaining(reviewObjectBody));
+      });
+  });
+});
+
+describe("GET /api/users", () => {
+  it("should return status: 200, and an array of catagory objects containing the correct keys", () => {
+    return request(app)
+      .get("/api/misc")
+      .expect(200)
+      .then(response => {
+        const users = response.body.users;
       });
   });
 });

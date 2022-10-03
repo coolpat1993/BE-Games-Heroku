@@ -8,6 +8,7 @@ const {
   insertComment,
   removeById,
   insertReview,
+  selectMisc,
 } = require("../models/models.js");
 
 const api = require("../endpoints.json");
@@ -96,6 +97,7 @@ exports.postComment = (req, res, next) => {
 
 exports.postReview = (req, res, next) => {
   const newReview = req.body;
+  console.log(req.body);
   insertReview(newReview)
     .then(newReview => {
       res.status(201).send({ newReview });
@@ -115,3 +117,15 @@ exports.deleteCommentById = (req, res) => {
       next(err);
     });
 };
+
+exports.viewMisc = (req, res, next) => {
+  selectMisc()
+    .then(user => {
+      res.status(200).send({ users: user });
+    })
+    .catch(err => {
+      next(err);
+    });
+};
+
+;

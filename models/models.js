@@ -1,4 +1,5 @@
 const db = require("../db/connection.js");
+const comments = require("../db/data/test-data/comments.js");
 
 exports.selectCategories = () => {
   return db.query("SELECT * FROM categories").then(result => {
@@ -224,4 +225,17 @@ exports.removeById = comment_id => {
       comment_id,
     ])
     .then(() => {});
+};
+
+exports.selectMisc = () => {
+  return db
+    .query(
+      `SELECT
+        *, 
+        (select json_agg(cmnts) FROM (SELECT comments.review_id, comments.votes, comments.author, comments.body FROM comments WHERE comments.review_id = reviews.review_id) cmnts) AS comments FROM reviews;`
+    )
+    .then(result => {
+      console.log(result.rows[3]);
+      return result.rows;
+    });
 };

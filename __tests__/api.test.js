@@ -499,13 +499,13 @@ describe("POST /api/reviews/:review_id/comments", () => {
   });
 });
 
-describe("GET /api/users", () => {
-  it("should return status: 200, and an array of catagory objects containing the correct keys", () => {
+describe("GET /api/misc", () => {
+  it("should return status: 200, and an array of review properties and a nested Array", () => {
     return request(app)
       .get("/api/misc")
       .expect(200)
-      .then(response => {
-        const users = response.body.users;
+      .then(({ body }) => {
+        expect(body.misc[5].comments.length).toEqual(3);
       });
   });
 });

@@ -97,7 +97,6 @@ exports.postComment = (req, res, next) => {
 
 exports.postReview = (req, res, next) => {
   const newReview = req.body;
-  console.log(req.body);
   insertReview(newReview)
     .then(newReview => {
       res.status(201).send({ newReview });
@@ -121,11 +120,9 @@ exports.deleteCommentById = (req, res) => {
 exports.viewMisc = (req, res, next) => {
   selectMisc()
     .then(user => {
-      res.status(200).send({ users: user });
+      res.status(200).send({ misc: user });
     })
     .catch(err => {
       next(err);
     });
 };
-
-;

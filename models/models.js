@@ -237,7 +237,7 @@ exports.selectMisc = () => {
       AS comments
       
       FROM reviews
-      
+
       LEFT JOIN comments ON reviews.review_id=comments.review_id GROUP BY reviews.review_id`
     )
     .then(result => {

@@ -12,7 +12,7 @@ const {
 const input = { created_at: Date.now() };
 let currentTime = JSON.stringify(
   convertTimestampToDate(input).created_at
-).substring(1, 18);
+).substring(1, 16);
 
 beforeEach(() => {
   return seed(data);
@@ -50,7 +50,7 @@ reviewObjectBody = {
 describe("GET api/", () => {
   it("should return status: 200 - returns a description of how the api works", () => {
     return request(app)
-      .get("/api/")
+      .get("/")
       .expect(200)
       .then(response => {
         expect(response.body["GET /api"]).toEqual({
@@ -419,7 +419,7 @@ describe("POST /api/reviews/:review_id/comments", () => {
           votes: expect.any(Number),
         });
 
-        expect(comment.created_at.substring(0, 17)).toEqual(currentTime);
+        expect(comment.created_at.substring(0, 15)).toEqual(currentTime);
       });
   });
   it("should return 400: responds with an error that there is no review by this Id", () => {

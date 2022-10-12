@@ -21,7 +21,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.get("/api/", getApi);
+app.get("/", getApi);
 
 app.get("/api/categories", viewCategories);
 

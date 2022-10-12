@@ -17,7 +17,7 @@ npx husky-init && npm install
 The current repo set up is made to work on Heroku, a platform as a service (PaaS) that will soon lose it's free status in the upcoming months, because of this some alternative hosting will be needed in the future.
 
 The backend Api is currently here with a list of endpoints but may move in the future if/when heroku changes their buisness model.
-https://nc-games-site.herokuapp.com/api
+https://nc-games-site.herokuapp.com/
 
 ### NC Games - back end tests and hosting.
 

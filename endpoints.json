@@ -4,7 +4,6 @@
   },
   "GET /api/categories": {
     "description": "serves an array of all categories",
-    "queries": [],
     "exampleResponse": {
       "categories": [
         {
@@ -15,8 +14,26 @@
     }
   },
   "GET /api/reviews": {
-    "description": "serves an array of all reviews",
-    "queries": ["category", "sort_by", "order"],
+    "description": "serves an array of all reviews, able to use additional chained queries to narrow down results",
+    "Queries": [
+      {
+        "Sort_by": [
+          "created_at",
+          "review_id",
+          "title",
+          "votes",
+          "comment_count"
+        ],
+        "order_by": ["ASC", "DESC"],
+        "votes": "num",
+        "title": "string",
+        "comment_count": "string",
+        "created_at": "num",
+        "owner": "string",
+        "designer": "string",
+        "category": "string"
+      }
+    ],
     "exampleResponse": {
       "reviews": [
         {
@@ -27,6 +44,148 @@
           "category": "hidden-roles",
           "created_at": 1610964101251,
           "votes": 5
+        }
+      ]
+    }
+  },
+  "GET /api/users": {
+    "description": "serves an array of all users",
+    "exampleResponse": {
+      "users": [
+        {
+          "username": "tickle122",
+          "name": "Tom Tickle",
+          "avatar_url": "https://vignette.wikia.nocookie.net/mrmen/images/d/d6/Mr-Tickle-9a.png/revision/latest?cb=20180127221953"
+        },
+        {
+          "username": "grumpy19",
+          "name": "Paul Grump",
+          "avatar_url": "https://vignette.wikia.nocookie.net/mrmen/images/7/78/Mr-Grumpy-3A.PNG/revision/latest?cb=20170707233013"
+        }
+      ]
+    }
+  },
+  "GET /api/reviews/:review_id": {
+    "description": "returns a review with a matching review ID",
+    "exampleResponse": {
+      "review": {
+        "review_id": 3,
+        "review_body": "Try to trick your friends. If you find yourself being dealt the Chamelean card then the aim of the game is simple; blend in... Meanwhile the other players aim to be as vague as they can to not give the game away ",
+        "title": "Karma Karma Chameleon",
+        "category": "hidden-roles",
+        "designer": "Rikki Tahta",
+        "owner": "happyamy2016",
+        "review_img_url": "https://images.pexels.com/photos/5350049/pexels-photo-5350049.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
+        "created_at": "2021-01-18T10:01:42.151Z",
+        "votes": 5,
+        "comment_count": "0"
+      }
+    }
+  },
+  "PATCH /api/reviews/:review_id": {
+    "description": "updates the votes column for a review based on Id",
+    "request": { "votes": 5 },
+    "exampleResponse": {
+      "review": {
+        "review_id": 3,
+        "review_body": "Try to trick your friends. If you find yourself being dealt the Chamelean card then the aim of the game is simple; blend in... Meanwhile the other players aim to be as vague as they can to not give the game away ",
+        "title": "Karma Karma Chameleon",
+        "category": "hidden-roles",
+        "designer": "Rikki Tahta",
+        "owner": "happyamy2016",
+        "review_img_url": "https://images.pexels.com/photos/5350049/pexels-photo-5350049.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
+        "created_at": "2021-01-18T10:01:42.151Z",
+        "votes": 10,
+        "comment_count": "0"
+      }
+    }
+  },
+  "GET /api/reviews/:review_id/comments": {
+    "description": "returns the comments for a review based on Id",
+    "exampleResponse": {
+      "comments": [
+        {
+          "comment_id": 1,
+          "body": "I loved this game too!",
+          "review_id": 2,
+          "author": "happyamy2016",
+          "votes": 16,
+          "created_at": "2017-11-22T12:36:03.389Z"
+        }
+      ]
+    }
+  },
+  "POST /api/reviews/:review_id/comments": {
+    "description": "Posts and returns a new comment for a review based on Id",
+    "request": {
+      "body": "This is a new comment",
+      "author": "happyamy2016"
+    },
+    "exampleResponse": {
+      "comments": [
+        {
+          "comment_id": 1,
+          "body": "This is a new comment",
+          "review_id": 2,
+          "author": "happyamy2016",
+          "votes": 0,
+          "created_at": "2022-10-22T12:36:03.389Z"
+        }
+      ]
+    }
+  },
+  "DELETE /api/comments/:comment_id": {
+    "description": "Deletes a comment based on the selected comment Id",
+    "exampleResponse": "there will be no response"
+  },
+  "POST /api/reviews": {
+    "description": "Posts and returns a new comment for a review based on Id",
+    "request": {
+      "title": "TestTitle",
+      "designer": "TestDesigner",
+      "owner": "mallionaire",
+      "review_img_url": "https://images.pexels.com/photos/163064/play-stone-network-networked-interactive-163064.jpeg",
+      "review_body": "Test review body",
+      "category": "social deduction"
+    },
+    "exampleResponse": {
+      "review": [
+        {
+          "title": "TestTitle",
+          "designer": "TestDesigner",
+          "owner": "mallionaire",
+          "review_img_url": "https://images.pexels.com/photos/163064/play-stone-network-networked-interactive-163064.jpeg",
+          "review_body": "Test review body",
+          "category": "social deduction",
+          "votes": 0,
+          "created_at": "2022-10-22T12:36:03.389Z"
+        }
+      ]
+    }
+  },
+  "GET /api/misc": {
+    "description": "Returns a nested array of both reviews and comments",
+    "exampleResponse": {
+      "misc": [
+        {
+          "review_id": 54,
+          "review_body": "Phasellus sit amet erat. Nulla tempus.",
+          "title": "Voyeur (Abel)",
+          "category": "roll-and-write",
+          "designer": "Chelsea McAusland",
+          "owner": "jessjelly",
+          "review_img_url": "https://i.picsum.photos/id/545/400/500.jpg?hmac=WMO4bdaIJTXVKGseE47ggQCSZqrVZ7-Qy1UryRXAXMw",
+          "created_at": "1970-01-10T02:56:38.400Z",
+          "votes": 57,
+          "comment_count": "1",
+          "comments": [
+            {
+              "review_id": 54,
+              "votes": 60,
+              "author": "jessjelly",
+              "body": "In blandit ultrices enim. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Proin interdum mauris non ligula pellentesque ultrices. Phasellus id sapien in sapien iaculis congue. Vivamus metus arcu, adipiscing molestie, hendrerit at, vulputate vitae, nisl. Aenean lectus."
+            }
+          ]
         }
       ]
     }

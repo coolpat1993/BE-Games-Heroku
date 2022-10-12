@@ -25,13 +25,13 @@ app.get("/api/", getApi);
 
 app.get("/api/categories", viewCategories);
 
-app.get("/api/reviews/:review_id", viewReviews);
+app.get("/api/reviews", getAllReviews);
 
 app.get("/api/users", viewUsers);
 
-app.patch("/api/reviews/:review_id", patchReview);
+app.get("/api/reviews/:review_id", viewReviews);
 
-app.get("/api/reviews", getAllReviews);
+app.patch("/api/reviews/:review_id", patchReview);
 
 app.get("/api/reviews/:review_id/comments", viewComments);
 

@@ -477,7 +477,7 @@ describe("4. /api/comments/:comment_id ", () => {
   });
 });
 
-describe("POST /api/reviews/:review_id/comments", () => {
+describe("POST /api/reviews/", () => {
   it("should return 201: responds with and object containing the correct keys", () => {
     const newReview = {
       title: "TestTitle",

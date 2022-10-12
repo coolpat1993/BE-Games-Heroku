@@ -241,12 +241,6 @@ exports.selectMisc = () => {
       LEFT JOIN comments ON reviews.review_id=comments.review_id GROUP BY reviews.review_id`
     )
     .then(result => {
-      console.log(result.rows);
       return result.rows;
     });
 };
-
-// sql list with no comment count//
-/*`SELECT
-        *, 
-        (select json_agg(cmnts) FROM (SELECT comments.review_id, comments.votes, comments.author, comments.body FROM comments WHERE comments.review_id = reviews.review_id) cmnts) AS comments FROM reviews;` */
